@@ -79,6 +79,14 @@ def require_session_token(f):
 
 
 def _is_localhost() -> bool:
-    """Check if the request originates from localhost or SSH tunnel via Nginx."""
+    """Check if the request originates from localhost or Docker network."""
     client_ip = request.headers.get('X-Real-IP', request.remote_addr)
-    return client_ip in ('127.0.0.1', '::1')
+    
+    if client_ip in ('127.0.0.1', '::1'):
+        return True
+    
+    # Allow Docker bridge IPs (which appear when using SSH tunneling to localhost)
+    if client_ip and client_ip.startswith(('172.', '192.168.', '10.')):
+        return True
+        
+    return False
