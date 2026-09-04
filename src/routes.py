@@ -73,9 +73,13 @@ def register_routes(app):
             pubsub = cache.pubsub()
             pubsub.subscribe('global_messages_channel')
             try:
-                for message in pubsub.listen():
-                    if message['type'] == 'message':
+                while True:
+                    message = pubsub.get_message(ignore_subscribe_messages=True, timeout=5.0)
+                    if message and message['type'] == 'message':
                         yield f"data: {message['data']}\n\n"
+                    else:
+                        # Yield a heartbeat comment to check if client disconnected
+                        yield ": heartbeat\n\n"
             except GeneratorExit:
                 pubsub.unsubscribe('global_messages_channel')
 
