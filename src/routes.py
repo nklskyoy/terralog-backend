@@ -128,7 +128,7 @@ def register_routes(app):
                 
             # Broadcast the thread state
             import json
-            latest_msgs = hydrate_thread_messages(thread_id, -3, -1)
+            latest_msgs = hydrate_thread_messages(thread_id, 0, -1)
             event_payload = {
                 "thread_id": thread_id,
                 "parent_thread_ids": input_data.parent_thread_ids,
@@ -152,7 +152,7 @@ def register_routes(app):
             cache.rpush(f"thread:{thread_id}", str(new_msg_id))
             
             import json
-            latest_msgs = hydrate_thread_messages(thread_id, -3, -1)
+            latest_msgs = hydrate_thread_messages(thread_id, 0, -1)
             meta_raw = cache.hgetall(f"thread_meta:{thread_id}")
             parents = meta_raw.get("parent_thread_ids", "").split(",") if meta_raw.get("parent_thread_ids") else []
             event_payload = {
@@ -172,7 +172,7 @@ def register_routes(app):
             meta = cache.hgetall(f"thread_meta:{t_id}")
             parents = meta.get("parent_thread_ids", "").split(",") if meta.get("parent_thread_ids") else []
             created_at = float(meta.get("created_at", 0))
-            msgs = hydrate_thread_messages(t_id, -4, -1)
+            msgs = hydrate_thread_messages(t_id, 0, -1)
             threads.append({
                 "id": t_id,
                 "parent_thread_ids": parents,
