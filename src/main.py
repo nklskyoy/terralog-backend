@@ -3,6 +3,7 @@ import threading
 import time
 from flask import Flask
 from flask_cors import CORS
+from a2wsgi import WSGIMiddleware
 
 from helpers import (
     FRONTEND_URL,
@@ -13,6 +14,7 @@ from routes import register_routes
 
 app = Flask(__name__)
 CORS(app)
+asgi_app = WSGIMiddleware(app)
 
 import logging
 

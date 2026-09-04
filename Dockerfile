@@ -19,4 +19,4 @@ ENV FLASK_RUN_PORT=5001
 # By default, point to a dockerized redis container named "redis"
 ENV REDIS_HOST=redis
 
-CMD ["flask", "run"]
+CMD ["uvicorn", "src.main:asgi_app", "--host", "0.0.0.0", "--port", "5001", "--workers", "4"]

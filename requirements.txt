@@ -2,3 +2,5 @@ Flask
 redis
 pydantic
 flask-cors
+uvicorn[standard]
+a2wsgi
