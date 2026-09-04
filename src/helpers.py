@@ -9,7 +9,8 @@ import redis
 from flask import request, jsonify
 
 # Cache Initialization
-cache = redis.Redis(host='localhost', port=6379, decode_responses=True)
+REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
+cache = redis.Redis(host=REDIS_HOST, port=6379, decode_responses=True)
 
 # --- Config & Environments ---
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
