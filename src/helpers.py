@@ -79,5 +79,6 @@ def require_session_token(f):
 
 
 def _is_localhost() -> bool:
-    """Check if the request originates from localhost."""
-    return request.remote_addr in ('127.0.0.1', '::1')
+    """Check if the request originates from localhost or SSH tunnel via Nginx."""
+    client_ip = request.headers.get('X-Real-IP', request.remote_addr)
+    return client_ip in ('127.0.0.1', '::1')
