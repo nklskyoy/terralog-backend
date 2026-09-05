@@ -23,27 +23,19 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def _token_logger_loop():
-    """Background loop logging new Token 1 and user page URL to terminal on every rotation."""
-    last_window = -1
-    while True:
-        current_window = int(time.time()) // TOKEN_1_ROTATION_SECONDS
-        if current_window != last_window:
-            token1 = _generate_token1(current_window)
-            user_url = f"{FRONTEND_URL}/user?token={token1}"
-            logger.info("\n" + "=" * 65)
-            logger.info(f"[TERRALOG] TOKEN 1 ROTATION (Gültig für 5 Min)")
-            logger.info(f"  Token 1: {token1}")
-            logger.info(f"  URL:     {user_url}")
-            logger.info("=" * 65 + "\n")
-            last_window = current_window
-        time.sleep(2)
-
+    """Log the fixed static Token 1 on startup."""
+    token1 = os.environ.get('STATIC_TOKEN1', 'dev_default_static_token')
+    user_url = f"{FRONTEND_URL}/user?token={token1}"
+    logger.info("\n" + "=" * 65)
+    logger.info(f"[TERRALOG] STATISCHER ZUGANGS-TOKEN (STATIC_TOKEN1)")
+    logger.info(f"  Token 1: {token1}")
+    logger.info(f"  URL:     {user_url}")
+    logger.info("=" * 65 + "\n")
 
 def start_token_logger():
-    """Start background logger thread once."""
+    """Start background logger thread once (now just executes immediately)."""
     if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' or not app.debug:
-        t = threading.Thread(target=_token_logger_loop, daemon=True)
-        t.start()
+        _token_logger_loop()
 
 
 register_routes(app)

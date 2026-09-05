@@ -33,18 +33,16 @@ def _generate_token1(window: int) -> str:
 
 
 def get_current_token1() -> str:
-    """Return Token 1 for the current time window."""
-    window = int(time.time()) // TOKEN_1_ROTATION_SECONDS
-    return _generate_token1(window)
+    """Return the fixed Token 1 from environment variable."""
+    return os.environ.get('STATIC_TOKEN1', 'dev_default_static_token')
 
 
 def _is_valid_token1(token: str) -> bool:
-    """Accept the current or previous window's Token 1 to handle rotation edges."""
+    """Validate against the fixed Token 1."""
     if not token:
         return False
-    window = int(time.time()) // TOKEN_1_ROTATION_SECONDS
-    return hmac.compare_digest(token, _generate_token1(window)) or \
-           hmac.compare_digest(token, _generate_token1(window - 1))
+    expected = os.environ.get('STATIC_TOKEN1', 'dev_default_static_token')
+    return hmac.compare_digest(token, expected)
 
 
 def create_session_token() -> str:
