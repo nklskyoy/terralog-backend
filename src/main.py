@@ -27,7 +27,7 @@ def _token_logger_loop():
     token1 = os.environ.get('STATIC_TOKEN1', 'dev_default_static_token')
     user_url = f"{FRONTEND_URL}/user?token={token1}"
     logger.info("\n" + "=" * 65)
-    logger.info(f"[TERRALOG] STATISCHER ZUGANGS-TOKEN (STATIC_TOKEN1)")
+    logger.info(f"[TERALOG] STATISCHER ZUGANGS-TOKEN (STATIC_TOKEN1)")
     logger.info(f"  Token 1: {token1}")
     logger.info(f"  URL:     {user_url}")
     logger.info("=" * 65 + "\n")

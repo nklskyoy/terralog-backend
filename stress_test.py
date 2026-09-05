@@ -71,13 +71,13 @@ async def run_stress_test(base_url, concurrency, phase_name, method, endpoint, h
 
 
 async def main():
-    parser = argparse.ArgumentParser(description="Terralog Full API Stress Tester")
+    parser = argparse.ArgumentParser(description="Teralog Full API Stress Tester")
     parser.add_argument("--url", default="https://localhost:8442/api", help="Base URL of API (e.g. https://localhost:8442/api)")
     args = parser.parse_args()
     
     base_url = args.url.rstrip('/')
     print("==================================================")
-    print(" TERRALOG LOAD TESTER")
+    print(" TERALOG LOAD TESTER")
     print("==================================================")
     print(f"Targeting Base URL: {base_url}")
     
