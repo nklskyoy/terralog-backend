@@ -170,12 +170,28 @@ def register_routes(app):
 
     @app.route('/global-state', methods=['GET'])
     def get_global_state():
-        thread_ids = cache.smembers('threads_set')
-        threads = []
+        thread_ids = list(cache.smembers('threads_set'))
+        
+        # 1. Fetch all metadata in a single lightning-fast Redis Pipeline
+        pipe = cache.pipeline()
         for t_id in thread_ids:
-            meta = cache.hgetall(f"thread_meta:{t_id}")
+            pipe.hgetall(f"thread_meta:{t_id}")
+        metas = pipe.execute()
+        
+        # 2. Extract and sort to find the top 16 newest threads
+        threads_info = []
+        for t_id, meta in zip(thread_ids, metas):
+            if not meta: continue
             parents = meta.get("parent_thread_ids", "").split(",") if meta.get("parent_thread_ids") else []
             created_at = float(meta.get("created_at", 0))
+            threads_info.append((t_id, parents, created_at))
+            
+        threads_info.sort(key=lambda x: x[2], reverse=True)
+        top_16 = threads_info[:16]
+        
+        # 3. ONLY fetch and deserialize messages for those top 16 threads
+        threads = []
+        for t_id, parents, created_at in top_16:
             msgs = hydrate_thread_messages(t_id, 0, -1)
             threads.append({
                 "id": t_id,
@@ -183,8 +199,8 @@ def register_routes(app):
                 "created_at": created_at,
                 "messages": [m.model_dump() for m in msgs]
             })
-        threads.sort(key=lambda x: x['created_at'], reverse=True)
-        return jsonify({"threads": threads[:16]}), 200
+            
+        return jsonify({"threads": threads}), 200
 
     @app.route('/thread-stats', methods=['GET'])
     @require_session_token
