@@ -7,7 +7,7 @@ import argparse
 async def fetch(session, url, request_id):
     start_time = time.perf_counter()
     try:
-        async with session.get(url, timeout=10) as response:
+        async with session.get(url, timeout=10, ssl=False) as response:
             await response.text()  # Wait for full response body
             status = response.status
     except Exception as e:
@@ -53,15 +53,15 @@ async def run_stress_test(url, concurrency):
 
 async def main():
     parser = argparse.ArgumentParser(description="Terralog Stress Tester")
-    parser.add_argument("--url", default="http://localhost:5001/global-state", help="The URL to stress test")
+    parser.add_argument("--url", default="https://localhost:8443/api/global-state", help="The URL to stress test")
     args = parser.parse_args()
     
     print("==================================================")
     print(" TERRALOG LOAD TESTER")
     print("==================================================")
-    print(f"Target URL: {args.url}")
+    print("Target URL:", args.url)
     print("Note: To run against production securely, make sure you forwarded the port:")
-    print("      ssh -L 5001:localhost:5001 root@217.154.89.127")
+    print("      ssh -L 8443:localhost:443 root@217.154.89.127")
     
     levels = [30, 40, 50]
     for concurrency in levels:
